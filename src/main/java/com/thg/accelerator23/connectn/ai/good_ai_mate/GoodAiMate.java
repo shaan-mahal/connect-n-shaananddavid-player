@@ -11,6 +11,8 @@ import java.util.ArrayList;
 public class GoodAiMate extends Player {
   //Fields we only want to calculate once (will this work or the player instantiated each time?)
   private final ArrayList<Position> quadruplets;
+  private final Counter botPiece;
+  private final Counter oppPiece;
 
   public GoodAiMate(Counter counter) {
     //TODO: fill in your name here
@@ -19,6 +21,12 @@ public class GoodAiMate extends Player {
     quadruplets.addAll(setVerticalQuadruplets(10,8,4));
     quadruplets.addAll(setPositiveDiagonalQuadruplets(10,8,4));
     quadruplets.addAll(setNegativeDiagonalQuadruplets(10,8,4));
+    this.botPiece = counter;
+    if (counter == Counter.X){
+      this.oppPiece = Counter.O;
+    } else {
+      this.oppPiece = Counter.X;
+    }
   }
 
   private ArrayList<Position> setHorizontalQuadruplets(int width, int height, int nToWin) {
@@ -79,17 +87,10 @@ public class GoodAiMate extends Player {
   public int getScore(Board board) {
     int score = 0;
     for (int i = 0; i < this.quadruplets.size() / 4; i++){
-      Counter a = board.getCounterAtPosition(quadruplets.get(i*4));
-      Counter b = board.getCounterAtPosition(quadruplets.get(i*4+1));
-      Counter c = board.getCounterAtPosition(quadruplets.get(i*4+2));
-      Counter d = board.getCounterAtPosition(quadruplets.get(i*4+3));
-      score = score + placeholderScoreFunction(a,b,c,d);
+      Window currWindow = new Window(board.getCounterAtPosition(quadruplets.get(i*4)),board.getCounterAtPosition(quadruplets.get(i*4+1)),board.getCounterAtPosition(quadruplets.get(i*4+2)),board.getCounterAtPosition(quadruplets.get(i*4+3)));
+      score = score + currWindow.getWindowScore(this.botPiece,this.oppPiece);
     }
     return score;
-  }
-
-  public int placeholderScoreFunction(Counter a, Counter b, Counter c, Counter d) {
-    return 1;
   }
 
   //public boolean winningMove(Board board) {  }
