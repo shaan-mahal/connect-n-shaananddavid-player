@@ -55,7 +55,7 @@ public class BoardieTest {
         assertEquals(-1,boardie.getLowestFreeRow(0));
     }
     @Test
-    public void testBoardieFromBoardie() {
+    public void testBoardieFromBoardieWithCounter() {
         GameConfig myConfig = new GameConfig(10,8,4);
         Board myBoard = new Board(myConfig);
         Boardie boardie = new Boardie(myBoard, Counter.X);
@@ -65,5 +65,12 @@ public class BoardieTest {
         System.out.println(boardie.prettyPrint());
         System.out.println(boardie2.prettyPrint());
         assertEquals(2,boardie2.getLocationValue(1,7));
+        assertEquals(2,boardie2.getNumberOfFilledPositions());
+        boardie2.claimLocation(2,7, 2);
+        assertEquals(3,boardie2.getNumberOfFilledPositions());
+        boardie2.claimLocation(2,7, 1);
+        assertEquals(3,boardie2.getNumberOfFilledPositions());
+        boardie2.claimLocation(2,7, 0);
+        assertEquals(2,boardie2.getNumberOfFilledPositions());
     }
 }

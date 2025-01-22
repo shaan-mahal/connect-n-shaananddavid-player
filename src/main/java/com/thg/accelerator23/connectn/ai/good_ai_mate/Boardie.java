@@ -4,7 +4,6 @@ import com.thehutgroup.accelerator.connectn.player.Board;
 import com.thehutgroup.accelerator.connectn.player.Counter;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Boardie {
     //Board data stored in [x] (col) [y] (row) format!!!
@@ -16,7 +15,9 @@ public class Boardie {
     byte oppByte;
     int width;
     int height;
+    int filledPositions;
 
+    //Contructor for initial creation from a Board object
     public Boardie(Board board, Counter myCounter) {
         this.botCounter = myCounter;
         this.oppCounter = botCounter.getOther();
@@ -24,14 +25,17 @@ public class Boardie {
         this.oppByte = 2;
         this.width = board.getConfig().getWidth();
         this.height = board.getConfig().getHeight();
+        this.filledPositions = 0;
         Counter[][] counterArray = board.getCounterPlacements();
         this.boardData = new byte[counterArray.length][counterArray[0].length];
         for (int i = 0; i < counterArray.length; i++) {
             for (int j = 0; j < counterArray[i].length; j++) {
                 if (counterArray[i][j] == this.botCounter) {
                     boardData[i][j] = 1;
+                    this.filledPositions++;
                 } else if (counterArray[i][j] == this.oppCounter) {
                     boardData[i][j] = 2;
+                    this.filledPositions++;
                 } else {
                     boardData[i][j] = 0;
                 }
@@ -39,12 +43,14 @@ public class Boardie {
         }
     }
 
+    //Constructor when copying from another Boardie
     public Boardie(Boardie existingBoardie) {
         this.botCounter = existingBoardie.botCounter;
         this.oppCounter = existingBoardie.oppCounter;
         this.width = existingBoardie.width;
         this.height = existingBoardie.height;
         this.boardData = new byte[existingBoardie.boardData.length][existingBoardie.boardData[0].length];
+        this.filledPositions = existingBoardie.filledPositions;
         //Copying the 2D array is more complex - we need to make sure it's a deep copy...
         for (int i = 0; i < this.width; i++) {
             System.arraycopy(existingBoardie.boardData[i], 0, this.boardData[i], 0, this.height);
@@ -54,7 +60,7 @@ public class Boardie {
     }
 
     public int[] getFreeColumns() {
-        ArrayList<Integer> freeColumns = new ArrayList<Integer>();
+        ArrayList<Integer> freeColumns = new ArrayList<>();
         for (int i = 0; i < boardData.length; i++) {
             if (boardData[i][0] == 0) { //We only need to check if the first row is empty.
                 freeColumns.add(i);
@@ -74,10 +80,19 @@ public class Boardie {
 
     public void claimLocation(int column, int row, int player) {
         if (player == 1) {
+            if (boardData[column][row] == 0){
+                this.filledPositions++;
+            }
             boardData[column][row] = this.botByte;
         } else if (player == 2) {
+            if (boardData[column][row] == 0){
+                this.filledPositions++;
+            }
             boardData[column][row] = this.oppByte;
         } else {
+            if (boardData[column][row] != 0){
+                this.filledPositions--;
+            }
             boardData[column][row] = 0;
         }
 
@@ -102,5 +117,13 @@ public class Boardie {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public int getNumberOfFilledPositions(){
+        return this.filledPositions;
+    }
+
+    public int getScore(){
+
     }
 }
