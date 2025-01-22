@@ -13,21 +13,18 @@ public class Window {
         this.array[3] = d;
     }
 
-    public int getWindowScore(Counter botPiece, Counter emptyPiece){
+    public int getWindowScore(Counter botPiece, Counter oppPiece){
         //TODO logic for calculating score
         int score = 0;
         int botPieceCount = 0;
-        int emptyPieceCount = 0;
         int oppPieceCount = 0;
-        Counter oppPiece = botPiece.getOther();
+//        Counter oppPiece = botPiece.getOther();
 
         // Iterating over each counter in window
         for (Counter c : array) {
             if (c == botPiece) {
                 botPieceCount++;
-            } else if (c == emptyPiece) {
-                emptyPieceCount++;
-            } else {
+            } else if (c == oppPiece) {
                 oppPieceCount++;
             }
         }
@@ -35,11 +32,11 @@ public class Window {
         // Scoring logic
         if (botPieceCount == 4) {
             score += 100;
-        } else if (botPieceCount == 3 && emptyPieceCount == 1) {
+        } else if (botPieceCount == 3 ) {
             score += 5;
-        } else if (botPieceCount == 2 && emptyPieceCount == 2) {
+        } else if (botPieceCount == 2 ) {
             score += 2;
-        } else if (oppPieceCount == 3 && emptyPieceCount == 1) {
+        } else if (oppPieceCount == 3 ) {
             score -= 4;
         }
 
