@@ -126,17 +126,17 @@ public class GoodAiMate extends Player {
 
   public String prettyPrint(Counter[][] matrix){
     StringBuilder result = new StringBuilder();
-      for (Counter[] counters : matrix) {
-          for (Counter counter : counters) {
-            if (counter == Counter.X) {
-              result.append(" X ");
-            } else if (counter == Counter.O) {
-              result.append(" O ");
-            } else {
-              result.append(" _ ");
-            }
-          }
-          result.append("\n");
+    for (int i = 0; i < matrix[0].length; i++){
+      for (int j = 0; j < matrix.length; j++){
+        if (matrix[j][i] == Counter.X) {
+          result.append(" X ");
+        } else if (matrix[j][i] == Counter.O) {
+          result.append(" O ");
+        } else {
+          result.append(" _ ");
+        }
+      }
+      result.append("\n");
       }
       return result.toString();
   }

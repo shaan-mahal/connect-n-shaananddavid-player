@@ -21,9 +21,10 @@ public class MiniMaxTest {
                 matrix[x][y] = null;
             }
         }
-        matrix[7][0] = Counter.X;
-        matrix[7][1] = Counter.X;
-        matrix[7][2] = Counter.X;
+        System.out.println("creating test matrix");
+        ai.prettyPrint(matrix);
+        matrix[0][7] = Counter.X;
+        matrix[1][7] = Counter.X;
         Board myBoard = new Board(matrix,myConfig);
         ai.minimax(myBoard,2,1,1,true,0);
     }
