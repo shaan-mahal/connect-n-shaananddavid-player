@@ -1,11 +1,11 @@
 package com.thg.accelerator23.connectn.ai.good_ai_mate;
 
-import com.thehutgroup.accelerator.connectn.player.Board;
-import com.thehutgroup.accelerator.connectn.player.Counter;
-import com.thehutgroup.accelerator.connectn.player.Player;
-import com.thehutgroup.accelerator.connectn.player.Position;
+import com.thehutgroup.accelerator.connectn.player.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 
 public class GoodAiMate extends Player {
@@ -93,12 +93,99 @@ public class GoodAiMate extends Player {
     return score;
   }
 
-  //public boolean winningMove(Board board) {  }
-
-  @Override
-  public int makeMove(Board board) {
-    //TODO: some crazy analysis
-    //TODO: make sure said analysis uses less than 2G of heap and returns within 10 seconds on whichever machine is running it
-    return 4;
+  private ArrayList<Position> validPositions(Board board){
+    ArrayList<Position> validPositions = new ArrayList<>();
+    for (int x = 0; x < 10; x++){
+      for (int y = 0; y < 8; y++){
+        Position currPosition = new Position(x, y);
+        if (board.hasCounterAtPosition(currPosition)){
+          validPositions.add(currPosition);
+        }
+      }
+    }
+    return validPositions;
   }
-}
+
+  private int getRandomCol(int max){
+    Random rand = new Random();
+    return rand.nextInt(max);
+  }
+
+  private int getMinVacantY(int x, int height, Board board) {
+    for (int i = height - 1; i >= 0; --i) {
+      if (i == 0 || board.getCounterPlacements()[x][i - 1] != null) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  public int[] minimax(Board board, int depth, int alpha, int beta, boolean maximisingPlayer) {
+    ArrayList<Position> validPositions = validPositions(board);
+    ArrayList<Integer> validColumns = new ArrayList<>();
+    for (Position validPosition : validPositions) {
+      validColumns.add(validPosition.getX());
+    }
+    int score = getScore(board);
+    if (score > 900000 || score < -900000 || validPositions.isEmpty() || depth == 0) {
+      if (score > 900000 || score < -900000) {
+        return new int[]{-1, score};
+      } else {
+        return new int[]{-1, 0};
+      }
+    }
+    if (maximisingPlayer) {
+      int currValue = -1000000;
+      int currColumn = validColumns.get(getRandomCol(validColumns.size()));
+      ArrayList<Position> nextPositions = new ArrayList<>();
+      for (int col : validColumns) {
+        int row = getMinVacantY(col, 8, board);
+        if (row != -1) {
+          Position currPosition = new Position(col, row);
+          nextPositions.add(new Position(col, row));
+          try {
+            Board b_copy = new Board(board, currPosition.getX(), this.botPiece);
+            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, false);
+            if (newColValue[1] > currValue) {
+              currValue = newColValue[1];
+              currColumn = newColValue[0];
+            }
+          } catch (InvalidMoveException ignored) {
+            ;
+          }
+        }
+      }
+      return new int[]{currColumn, currValue};
+    }
+    else {
+      int currValue = 1000000;
+      int currColumn = validColumns.get(getRandomCol(validColumns.size()));;
+      ArrayList<Position> nextPositions = new ArrayList<>();
+      for (int col : validColumns) {
+        int row = getMinVacantY(col, 8, board);
+        if (row != -1) {
+          Position currPosition = new Position(col, row);
+          nextPositions.add(new Position(col, row));
+          try {
+            Board b_copy = new Board(board, currPosition.getX(), this.oppPiece);
+            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, true);
+            if (newColValue[1] > currValue) {
+              currValue = newColValue[1];
+              currColumn = newColValue[0];
+            }
+          } catch (InvalidMoveException ignored) {
+            ;
+          }
+        }
+      }
+      return new int[]{currColumn, currValue};
+    }
+  }
+
+    @Override
+    public int makeMove (Board board){
+      //TODO: some crazy analysis
+      //TODO: make sure said analysis uses less than 2G of heap and returns within 10 seconds on whichever machine is running it
+      return 4;
+    }
+  }
