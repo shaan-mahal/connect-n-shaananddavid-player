@@ -31,13 +31,13 @@ public class Window {
 
         // Scoring logic
         if (botPieceCount == 4) {
-            score += 100;
+            score += 1000000;
         } else if (botPieceCount == 3 ) {
             score += 5;
         } else if (botPieceCount == 2 ) {
             score += 2;
         } else if (oppPieceCount == 3 ) {
-            score -= 4;
+            score -= 1000000;
         }
 
         return score;
