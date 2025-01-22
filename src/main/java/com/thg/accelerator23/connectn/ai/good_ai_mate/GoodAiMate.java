@@ -13,6 +13,8 @@ public class GoodAiMate extends Player {
   private final ArrayList<Position> quadruplets;
   private final Counter botPiece;
   private final Counter oppPiece;
+  private int width;
+  private int height;
 
   public GoodAiMate(Counter counter) {
     //TODO: fill in your name here
@@ -93,13 +95,15 @@ public class GoodAiMate extends Player {
     return score;
   }
 
-  private ArrayList<Position> validPositions(Board board){
+  private ArrayList<Position> validPositions(Board board, int width, int height){
     ArrayList<Position> validPositions = new ArrayList<>();
-    for (int x = 0; x < 10; x++){
-      for (int y = 0; y < 8; y++){
+    for (int x = 0; x < width; x++){
+      for (int y = 0; y < height; y++){
         Position currPosition = new Position(x, y);
-        if (board.hasCounterAtPosition(currPosition)){
-          validPositions.add(currPosition);
+        if (board.isWithinBoard(currPosition)){
+          if (board.getCounterAtPosition(currPosition) != Counter.X && board.getCounterAtPosition(currPosition) != Counter.O){
+            validPositions.add(currPosition);
+          }
         }
       }
     }
@@ -120,13 +124,38 @@ public class GoodAiMate extends Player {
     return -1;
   }
 
-  public int[] minimax(Board board, int depth, int alpha, int beta, boolean maximisingPlayer) {
-    ArrayList<Position> validPositions = validPositions(board);
+  public String prettyPrint(Counter[][] matrix){
+    StringBuilder result = new StringBuilder();
+      for (Counter[] counters : matrix) {
+          for (Counter counter : counters) {
+            if (counter == Counter.X) {
+              result.append(" X ");
+            } else if (counter == Counter.O) {
+              result.append(" O ");
+            } else {
+              result.append(" _ ");
+            }
+          }
+          result.append("\n");
+      }
+      return result.toString();
+  }
+
+  public int[] minimax(Board board, int depth, int alpha, int beta, boolean maximisingPlayer, int depthCounter) {
+    depthCounter +=1;
+    System.out.println("Counter iterations = " + depthCounter);
+    System.out.println(prettyPrint(board.getCounterPlacements()));
+    this.width = board.getConfig().getWidth();
+    this.height = board.getConfig().getHeight();
+    System.out.println("Minimax Start");
+    ArrayList<Position> validPositions = validPositions(board, this.width, this.height);
     ArrayList<Integer> validColumns = new ArrayList<>();
     for (Position validPosition : validPositions) {
       validColumns.add(validPosition.getX());
     }
+    System.out.println("Valid positions: " + validPositions.size());
     int score = getScore(board);
+    System.out.println("Score: " + score);
     if (score > 900000 || score < -900000 || validPositions.isEmpty() || depth == 0) {
       if (score > 900000 || score < -900000) {
         return new int[]{-1, score};
@@ -139,13 +168,13 @@ public class GoodAiMate extends Player {
       int currColumn = validColumns.get(getRandomCol(validColumns.size()));
       ArrayList<Position> nextPositions = new ArrayList<>();
       for (int col : validColumns) {
-        int row = getMinVacantY(col, 8, board);
+        int row = getMinVacantY(col, this.height, board);
         if (row != -1) {
           Position currPosition = new Position(col, row);
           nextPositions.add(new Position(col, row));
           try {
             Board b_copy = new Board(board, currPosition.getX(), this.botPiece);
-            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, false);
+            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, false,depthCounter);
             if (newColValue[1] > currValue) {
               currValue = newColValue[1];
               currColumn = newColValue[0];
@@ -162,13 +191,13 @@ public class GoodAiMate extends Player {
       int currColumn = validColumns.get(getRandomCol(validColumns.size()));;
       ArrayList<Position> nextPositions = new ArrayList<>();
       for (int col : validColumns) {
-        int row = getMinVacantY(col, 8, board);
+        int row = getMinVacantY(col, this.height, board);
         if (row != -1) {
           Position currPosition = new Position(col, row);
           nextPositions.add(new Position(col, row));
           try {
             Board b_copy = new Board(board, currPosition.getX(), this.oppPiece);
-            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, true);
+            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, true, depthCounter);
             if (newColValue[1] > currValue) {
               currValue = newColValue[1];
               currColumn = newColValue[0];

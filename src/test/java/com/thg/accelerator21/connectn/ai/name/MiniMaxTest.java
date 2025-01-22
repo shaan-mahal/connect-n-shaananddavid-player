@@ -12,18 +12,19 @@ public class MiniMaxTest {
     @Test
     public void testMiniMax() {
         GoodAiMate ai = new GoodAiMate(Counter.X);
+        System.out.println("setting config");
         GameConfig myConfig = new GameConfig(10,8,4);
-        Counter[][] matrix = new Counter[][] {
-                {null, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X},
-                {Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O},
-                {Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X},
-                {Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O},
-                {Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X},
-                {Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O},
-                {Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X},
-                {Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O, Counter.X, Counter.O}
-        };
+        System.out.println("creating test matrix");
+        Counter[][] matrix = new Counter[10][8];        //Note! It works in columns then rows in Board.
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 10; x++) {
+                matrix[x][y] = null;
+            }
+        }
+        matrix[7][0] = Counter.X;
+        matrix[7][1] = Counter.X;
+        matrix[7][2] = Counter.X;
         Board myBoard = new Board(matrix,myConfig);
-        ai.minimax(myBoard,1,1,1,true);
+        ai.minimax(myBoard,2,1,1,true,0);
     }
 }
