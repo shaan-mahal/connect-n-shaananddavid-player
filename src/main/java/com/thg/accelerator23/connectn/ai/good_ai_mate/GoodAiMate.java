@@ -214,6 +214,7 @@ public class GoodAiMate extends Player {
     @Override
     public int makeMove (Board board){
       //TODO: some crazy analysis
+
       //TODO: make sure said analysis uses less than 2G of heap and returns within 10 seconds on whichever machine is running it
       return 4;
     }
