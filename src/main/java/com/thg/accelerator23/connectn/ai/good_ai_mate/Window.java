@@ -1,5 +1,7 @@
 package com.thg.accelerator23.connectn.ai.good_ai_mate;
+
 import com.thehutgroup.accelerator.connectn.player.Counter;
+
 public class Window {
     private int score;
     private final Counter[] array = new Counter[4];
@@ -40,6 +42,8 @@ public class Window {
         } else if (oppPieceCount == 3 && emptyPieceCount == 1) {
             score -= 4;
         }
+
         return score;
     }
+
 }
