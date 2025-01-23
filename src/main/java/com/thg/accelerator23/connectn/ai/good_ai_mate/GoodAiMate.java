@@ -51,7 +51,6 @@ public class GoodAiMate extends Player {
         horizontalQuadruplets.add(new Position(col + 1, row));
         horizontalQuadruplets.add(new Position(col + 2, row));
         horizontalQuadruplets.add(new Position(col + 3, row));
-        //Window currWindow = new Window(board.getCounterAtPosition(position1),board.getCounterAtPosition(position2),board.getCounterAtPosition(position3),board.getCounterAtPosition(position4));
       }
     }
     return horizontalQuadruplets;
@@ -98,61 +97,6 @@ public class GoodAiMate extends Player {
     return negativeDiagonalQuadruplets;
   }
 
-  public int getScore(Board board) {
-    int score = 0;
-    for (int i = 0; i < this.quadruplets.size() / 4; i++) {
-      Window currWindow = new Window(board.getCounterAtPosition(quadruplets.get(i * 4)), board.getCounterAtPosition(quadruplets.get(i * 4 + 1)), board.getCounterAtPosition(quadruplets.get(i * 4 + 2)), board.getCounterAtPosition(quadruplets.get(i * 4 + 3)));
-      score = score + currWindow.getWindowScore(this.botPiece, this.oppPiece);
-    }
-    return score;
-  }
-
-  private ArrayList<Position> validPositions(Board board, int width, int height) {
-    ArrayList<Position> validPositions = new ArrayList<>();
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-        Position currPosition = new Position(x, y);
-        if (board.isWithinBoard(currPosition)) {
-          if (board.getCounterAtPosition(currPosition) != Counter.X && board.getCounterAtPosition(currPosition) != Counter.O) {
-            validPositions.add(currPosition);
-          }
-        }
-      }
-    }
-    return validPositions;
-  }
-
-  private int getRandomCol(int max) {
-    Random rand = new Random();
-    return rand.nextInt(max);
-  }
-
-  private int getMinVacantY(int x, int height, Board board) {
-    for (int i = height - 1; i >= 0; --i) {
-      if (i == 0 || board.getCounterPlacements()[x][i - 1] != null) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  public String prettyPrint(Counter[][] matrix) {
-    StringBuilder result = new StringBuilder();
-    for (Counter[] counters : matrix) {
-      for (Counter counter : counters) {
-        if (counter == Counter.X) {
-          result.append(" X ");
-        } else if (counter == Counter.O) {
-          result.append(" O ");
-        } else {
-          result.append(" _ ");
-        }
-      }
-      result.append("\n");
-    }
-    return result.toString();
-  }
-
   public int[] minimax(Boardie board, int depth, int alpha, int beta, int player, int depthCounter) {
     //Step 1: update the depth we're at
     int currentDepth = depthCounter + 1;
@@ -194,9 +138,16 @@ public class GoodAiMate extends Player {
       Boardie newBoardie = new Boardie(board);
       newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
       int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[0];
-      if (newScore > currentScore) {
-        bestScore = newScore;
-        bestColumn = availablePositions.get(i).getX();
+      if (nextPlayer == 1) {
+        if (newScore > bestScore) {
+          bestScore = newScore;
+          bestColumn = availablePositions.get(i).getX();
+        }
+      } else if (nextPlayer == 2) {
+        if (newScore < bestScore) {
+          bestScore = newScore;
+          bestColumn = availablePositions.get(i).getX();
+        }
       }
     }
     return new int[]{bestColumn, bestScore};
