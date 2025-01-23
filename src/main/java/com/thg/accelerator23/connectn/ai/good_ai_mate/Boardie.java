@@ -132,6 +132,18 @@ public class Boardie {
         return this.height;
     }
 
+    // integer value assigned for each position in table for weighting
+    public int[][] positionalWeighting = {
+            {3, 4, 5, 6, 7, 7, 6, 5, 4, 3},
+            {4, 6, 8, 10, 12, 12, 10, 8, 6, 4},
+            {5, 8, 11, 14, 16, 16, 14, 11, 8, 5},
+            {6, 10, 14, 18, 20, 20, 18, 14, 10, 6},
+            {6, 10, 14, 18, 20, 20, 18, 14, 10, 6},
+            {5, 8, 11, 14, 16, 16, 14, 11, 8, 5},
+            {4, 6, 8, 10, 12, 12, 10, 8, 6, 4},
+            {3, 4, 5, 6, 7, 7, 6, 5, 4, 3}
+    };
+
     public int getScore(ArrayList<Position> quadruplets){
         int score = 0;
         //I've made this without IF statements just in case...and it's fun
@@ -141,30 +153,22 @@ public class Boardie {
             values[1] = this.getLocationValue(quadruplets.get(i+1).getX(), quadruplets.get(i+1).getY());
             values[2] = this.getLocationValue(quadruplets.get(i+2).getX(), quadruplets.get(i+2).getY());
             values[3] = this.getLocationValue(quadruplets.get(i+3).getX(), quadruplets.get(i+3).getY());
-//            for (int j = 0; j < 4; j++) {
-//                //Add up scores from bot
-//                score += values[j] % 2;
-//                //Subtract scores from opponent
-//                score -= values[j] / 2;
-//            }
-//            //Add additional factor for bot if four in a row - win
-//            score += (values[0]%2)*(values[1]%2)*(values[2]%2)*(values[3]%2)*2000000;
-//            //Subtract additional factor for opponent four in a row - loss
-//            score -= (values[0]/2)*(values[1]/2)*(values[2]/2)*(values[3]/2)*2000000;
-//            if (quadruplets.get(i).getX() == 4 || quadruplets.get(i).getX() == 5 ) {
-//                score += 1000;
-//            }
+
             int player1Count = 0;
             int player2Count = 0;
             int sum = 0;
             for (int j = 0; j < 4; j++) {
+                int x = quadruplets.get(j).getX();
+                int y = quadruplets.get(j).getY();
                 if (values[j] == 1) {
                     player1Count++;
+                    sum += positionalWeighting[y][x]; // add positional weighting to ai
                 } else if (values[j] == 2) {
                     player2Count++;
+                    sum -= positionalWeighting[y][x]; // subtract positional weighting to player
                 }
             }
-            sum += (player1Count - player2Count);
+            sum += (player1Count - player2Count) ;
             if (player1Count == 4){
                 sum += 2000000;
             }
@@ -184,7 +188,6 @@ public class Boardie {
                 sum-=1000;
             }
             score = score + sum;
-            //System.out.println("Quadruplet: "+ quadruplets.get(i).getX() + "," + quadruplets.get(i).getY() + " - " + quadruplets.get(i+3).getX() + "," + quadruplets.get(i+3).getY() + "Sum: " + sum);
 
         }
         return score;
@@ -200,4 +203,5 @@ public class Boardie {
         }
         return availablePositions;
     }
+
 }

@@ -106,6 +106,7 @@ public class GoodAiMate extends Player {
     int currentDepth = depthCounter + 1;
     //Step 2: gather the free column numbers (0-9), if any
 
+    ArrayList<PositionWithScore> availablePositionsWithScores = PositionWithScore.getNextAvailablePositionsWithScores(board, this.quadruplets);
     ArrayList<Position> availablePositions = board.getNextAvailablePositions();
     /*
     Step 4: get score of board including if there is a win/loss/draw
@@ -122,26 +123,48 @@ public class GoodAiMate extends Player {
       return new int[]{0, currentScore}; //In this case, the game would be over.
     }
     //The next code only runs if we haven't reached the terminus...
-    int bestColumn = availablePositions.get(0).getX();
+//    int bestColumn = availablePositions.get(0).getX();
+    int bestColumn = availablePositionsWithScores.get(0).getPosition().getX();
     int bestScore;
-    if (nextPlayer == 1 ) {
+    if (nextPlayer == 1) {
       bestScore = -999999;
     } else {
       bestScore = 999999;
     }
-    for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
+//    for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
+//      Boardie newBoardie = new Boardie(board);
+//      newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
+//      int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[1];
+//      if (nextPlayer == 1) {
+//        if (newScore > bestScore) {
+//          bestScore = newScore;
+//          bestColumn = availablePositions.get(i).getX();
+//        }
+//      } else if (nextPlayer == 2) {
+//        if (newScore < bestScore) {
+//          bestScore = newScore;
+//          bestColumn = availablePositions.get(i).getX();
+//        }
+//      }
+//    }
+    for (PositionWithScore posWithScore : availablePositionsWithScores) {
       Boardie newBoardie = new Boardie(board);
-      newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
+      Position pos = posWithScore.getPosition(); // Get the position from PositionWithScore
+      newBoardie.claimLocation(pos.getX(), pos.getY(), player);
+
+      // Use the score stored in PositionWithScore
       int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[1];
+
+      // Maximize for player 1 (AI) and minimize for player 2 (opponent)
       if (nextPlayer == 1) {
         if (newScore > bestScore) {
           bestScore = newScore;
-          bestColumn = availablePositions.get(i).getX();
+          bestColumn = pos.getX();
         }
       } else if (nextPlayer == 2) {
         if (newScore < bestScore) {
           bestScore = newScore;
-          bestColumn = availablePositions.get(i).getX();
+          bestColumn = pos.getX();
         }
       }
     }
@@ -157,7 +180,6 @@ public class GoodAiMate extends Player {
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
     int[] result = minimax(currentBoard, 4, this.alpha, this.beta, 1, 0);
-    System.out.println(Arrays.toString(result));
     return result[0];
   }
 }
