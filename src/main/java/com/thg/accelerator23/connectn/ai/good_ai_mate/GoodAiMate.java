@@ -121,7 +121,12 @@ public class GoodAiMate extends Player {
     int currentColumn = availablePositions.get(0).getX();
     //The next code only runs if we haven't reached the terminus...
     int bestColumn = availablePositions.get(0).getX();
-    int bestScore = -999999;
+    int bestScore;
+    if (nextPlayer == 1 ) {
+      bestScore = -999999;
+    } else {
+      bestScore = 999999;
+    }
     for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
       Boardie newBoardie = new Boardie(board);
       newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
@@ -150,7 +155,7 @@ public class GoodAiMate extends Player {
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
-    int result = minimax(currentBoard, 2, this.alpha, this.beta, 1, 0)[0];
+    int result = minimax(currentBoard, 10, this.alpha, this.beta, 1, 0)[0];
     return result;
   }
 }

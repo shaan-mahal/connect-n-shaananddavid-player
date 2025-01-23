@@ -151,6 +151,9 @@ public class Boardie {
             score += (values[0]%2)*(values[1]%2)*(values[2]%2)*(values[3]%2)*2000000;
             //Subtract additional factor for opponent four in a row - loss
             score -= (values[0]/2)*(values[1]/2)*(values[2]/2)*(values[3]/2)*2000000;
+            if (quadruplets.get(i).getX() == 4 || quadruplets.get(i).getX() == 5 ) {
+                score += 1000;
+            }
         }
         return score;
     }
