@@ -153,5 +153,16 @@ public class Boardie {
             score -= (values[0]/2)*(values[1]/2)*(values[2]/2)*(values[3]/2)*2000000;
         }
         return score;
+
+        public ArrayList<Position> getNextAvailablePositions(){
+            ArrayList<Position> nextAvailablePositions = new ArrayList<>();
+            for (int i = 0; i < this.width; i++) {
+                int nextRow = getLowestFreeRow(i);
+                if (boardData[i][0] != -1) {
+
+                }
+                Position newPosition = new Position(this.boardData[i][0], this.boardData[i][1]);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.thg.accelerator21.connectn.ai.name;
 import com.thehutgroup.accelerator.connectn.player.Board;
 import com.thehutgroup.accelerator.connectn.player.Counter;
 import com.thehutgroup.accelerator.connectn.player.GameConfig;
+import com.thg.accelerator23.connectn.ai.good_ai_mate.Boardie;
 import com.thg.accelerator23.connectn.ai.good_ai_mate.GoodAiMate;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,19 @@ public class MiniMaxTest {
         System.out.println(ai.makeMove(newBoard));
     }
     @Test
-    public void testMiniMaxOneEmpty() {
+    public void testmostofFirstRowFilled() {
+        GoodAiMate ai = new GoodAiMate(Counter.X);
+        System.out.println("setting config");
+        GameConfig myConfig = new GameConfig(10,8,4);
+        Board newBoard = new Board(myConfig);
+        Boardie newBoardie = new Boardie(newBoard,Counter.X);
+        newBoardie.claimLocation(0,7,1);
+        newBoardie.claimLocation(0,6,1);
+        newBoardie.claimLocation(0,5,1);
+        assertEquals(4,newBoardie.getLowestFreeRow(0));
+    }
+    @Test
+    public void testMiniMaxOneRowEmpty() {
         GoodAiMate ai = new GoodAiMate(Counter.X);
         System.out.println("setting config");
         GameConfig myConfig = new GameConfig(10,8,4);

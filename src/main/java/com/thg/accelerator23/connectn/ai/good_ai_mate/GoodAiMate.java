@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class GoodAiMate extends Player {
   //Fields in refactored version
-  private final ArrayList<Position> quadruplets;
+  public final ArrayList<Position> quadruplets;
   private int boardWidth;
   private int boardHeight;
 
@@ -43,7 +43,7 @@ public class GoodAiMate extends Player {
     this.beta = 1;
   }
 
-  private ArrayList<Position> setHorizontalQuadruplets(int width, int height, int nToWin) {
+  public ArrayList<Position> setHorizontalQuadruplets(int width, int height, int nToWin) {
     ArrayList<Position> horizontalQuadruplets = new ArrayList<>();
     for (int row = 0; row < height; row++) {
       for (int col = 0; col <= width - nToWin; col++) {
@@ -56,7 +56,7 @@ public class GoodAiMate extends Player {
     return horizontalQuadruplets;
   }
 
-  private ArrayList<Position> setVerticalQuadruplets(int width, int height, int nToWin) {
+  public ArrayList<Position> setVerticalQuadruplets(int width, int height, int nToWin) {
     ArrayList<Position> verticalQuadruplets = new ArrayList<>();
     for (int col = 0; col < width; col++) {
       for (int row = 0; row <= height - nToWin; row++) {
@@ -69,7 +69,7 @@ public class GoodAiMate extends Player {
     return verticalQuadruplets;
   }
 
-  private ArrayList<Position> setPositiveDiagonalQuadruplets(int width, int height, int nToWin) {
+  public ArrayList<Position> setPositiveDiagonalQuadruplets(int width, int height, int nToWin) {
     ArrayList<Position> positiveDiagonalQuadruplets = new ArrayList<>();
     //Positive diagonals (col and row increase)
     for (int row = 0; row <= height - nToWin; row++) {
@@ -83,7 +83,7 @@ public class GoodAiMate extends Player {
     return positiveDiagonalQuadruplets;
   }
 
-  private ArrayList<Position> setNegativeDiagonalQuadruplets(int width, int height, int nToWin) {
+  public ArrayList<Position> setNegativeDiagonalQuadruplets(int width, int height, int nToWin) {
     ArrayList<Position> negativeDiagonalQuadruplets = new ArrayList<>();
     //Negative diagonals (col decreases, row increases)
     for (int col = width - 1; col >= 3; col--) {
@@ -109,6 +109,7 @@ public class GoodAiMate extends Player {
         int lowestFreeRow = board.getLowestFreeRow(i);
         if (lowestFreeRow != -1){
           availablePositions.add(new Position(freeCols.get(i), lowestFreeRow));
+          System.out.println(availablePositions.size());
         }
       }
     }
@@ -124,9 +125,6 @@ public class GoodAiMate extends Player {
     This is the "base case" if no moves are left and should not occur in the first iteration anyway.
     */
     //Print statements for tracking
-    System.out.println("Depth counter="+ depthCounter);
-    System.out.println("currentScore=" + currentScore);
-    System.out.println("player=" + nextPlayer);
     System.out.println(board.prettyPrint());
     if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || board.filledPositions == board.getWidth() * board.getHeight()) {
       return new int[]{currentColumn, currentScore}; //In this case, the game would be over.
@@ -162,6 +160,6 @@ public class GoodAiMate extends Player {
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
-    return minimax(currentBoard, 5, this.alpha, this.beta, 1, 0)[0];
+    return minimax(currentBoard, 2, this.alpha, this.beta, 1, 0)[0];
   }
 }
