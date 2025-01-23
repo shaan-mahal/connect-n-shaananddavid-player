@@ -154,4 +154,15 @@ public class Boardie {
         }
         return score;
     }
+
+    public ArrayList<Position> getNextAvailablePositions(){
+        ArrayList<Position> availablePositions = new ArrayList<>();
+        for (int i = 0; i < this.width; i++) {
+            int nextRow = getLowestFreeRow(i);
+            if (nextRow != -1) {
+                availablePositions.add(new Position(i, nextRow));
+            }
+        }
+        return availablePositions;
+    }
 }

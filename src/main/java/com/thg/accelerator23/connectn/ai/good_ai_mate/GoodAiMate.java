@@ -101,38 +101,26 @@ public class GoodAiMate extends Player {
     //Step 1: update the depth we're at
     int currentDepth = depthCounter + 1;
     //Step 2: gather the free column numbers (0-9), if any
-    ArrayList<Integer> freeCols = board.getFreeColumns();
-    //Step 3: generate positions from this list if any
-    ArrayList<Position> availablePositions = new ArrayList<>();
-    if (!freeCols.isEmpty()) {
-      for (int i = 0; i < freeCols.size(); i++) {
-        int lowestFreeRow = board.getLowestFreeRow(i);
-        if (lowestFreeRow != -1){
-          availablePositions.add(new Position(freeCols.get(i), lowestFreeRow));
-        }
-      }
-    }
+
+    ArrayList<Position> availablePositions = board.getNextAvailablePositions();
     /*
     Step 4: get score of board including if there is a win/loss/draw
     Win = 1000000, loss = -1000000, draw = -999999. Anything else is fair game
     */
     int currentScore = board.getScore(this.quadruplets);
-    int currentColumn = -1;
     int nextPlayer = (player % 2) * 2 + (player / 2);
     /*
     Step 5: check if a) massive score means win/loss, b) available positions c) not hit depth limit
     This is the "base case" if no moves are left and should not occur in the first iteration anyway.
     */
     //Print statements for tracking
-    System.out.println("Depth counter="+ depthCounter);
-    System.out.println("currentScore=" + currentScore);
-    System.out.println("player=" + nextPlayer);
-    System.out.println(board.prettyPrint());
-    if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || board.filledPositions == board.getWidth() * board.getHeight()) {
-      return new int[]{currentColumn, currentScore}; //In this case, the game would be over.
+
+    if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || availablePositions.isEmpty()) {
+      return new int[]{0, currentScore}; //In this case, the game would be over.
     }
+    int currentColumn = availablePositions.get(0).getX();
     //The next code only runs if we haven't reached the terminus...
-    int bestColumn = -1;
+    int bestColumn = availablePositions.get(0).getX();
     int bestScore = -999999;
     for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
       Boardie newBoardie = new Boardie(board);
@@ -162,6 +150,7 @@ public class GoodAiMate extends Player {
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
-    return minimax(currentBoard, 5, this.alpha, this.beta, 1, 0)[0];
+    int result = minimax(currentBoard, 2, this.alpha, this.beta, 1, 0)[0];
+    return result;
   }
 }
