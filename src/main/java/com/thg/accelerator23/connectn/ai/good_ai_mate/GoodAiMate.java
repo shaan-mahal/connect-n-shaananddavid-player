@@ -2,9 +2,10 @@ package com.thg.accelerator23.connectn.ai.good_ai_mate;
 
 import com.thehutgroup.accelerator.connectn.player.*;
 
-import java.lang.reflect.Array;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 
@@ -152,79 +153,56 @@ public class GoodAiMate extends Player {
     return result.toString();
   }
 
-  public int[] minimax(Board board, int depth, int alpha, int beta, boolean maximisingPlayer, int depthCounter) {
+  public int[] minimax(Boardie board, int depth, int alpha, int beta, int player, int depthCounter) {
     //Step 1: update the depth we're at
-    depthCounter++;
-
-
-    depthCounter += 1;
-    System.out.println("Counter iterations = " + depthCounter);
-    System.out.println(prettyPrint(board.getCounterPlacements()));
-    this.width = board.getConfig().getWidth();
-    this.height = board.getConfig().getHeight();
-    System.out.println("Minimax Start");
-    ArrayList<Position> validPositions = validPositions(board, this.width, this.height);
-    ArrayList<Integer> validColumns = new ArrayList<>();
-    for (Position validPosition : validPositions) {
-      validColumns.add(validPosition.getX());
-    }
-    System.out.println("Valid positions: " + validPositions.size());
-    int score = getScore(board);
-    System.out.println("Score: " + score);
-    if (score > 900000 || score < -900000 || validPositions.isEmpty() || depth == 0) {
-      if (score > 900000 || score < -900000) {
-        return new int[]{-1, score};
-      } else {
-        return new int[]{-1, 0};
-      }
-    }
-    if (maximisingPlayer) {
-      int currValue = -1000000;
-      int currColumn = validColumns.get(getRandomCol(validColumns.size()));
-      ArrayList<Position> nextPositions = new ArrayList<>();
-      for (int col : validColumns) {
-        int row = getMinVacantY(col, this.height, board);
-        if (row != -1) {
-          Position currPosition = new Position(col, row);
-          nextPositions.add(new Position(col, row));
-          try {
-            Board b_copy = new Board(board, currPosition.getX(), this.botPiece);
-            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, false, depthCounter);
-            if (newColValue[1] > currValue) {
-              currValue = newColValue[1];
-              currColumn = newColValue[0];
-            }
-          } catch (InvalidMoveException ignored) {
-            ;
-          }
+    int currentDepth = depthCounter + 1;
+    //Step 2: gather the free column numbers (0-9), if any
+    ArrayList<Integer> freeCols = board.getFreeColumns();
+    //Step 3: generate positions from this list if any
+    ArrayList<Position> availablePositions = new ArrayList<>();
+    if (!freeCols.isEmpty()) {
+      for (int i = 0; i < freeCols.size(); i++) {
+        int lowestFreeRow = board.getLowestFreeRow(i);
+        if (lowestFreeRow != -1){
+          availablePositions.add(new Position(freeCols.get(i), lowestFreeRow));
         }
       }
-      return new int[]{currColumn, currValue};
-    } else {
-      int currValue = 1000000;
-      int currColumn = validColumns.get(getRandomCol(validColumns.size()));
-      ;
-      ArrayList<Position> nextPositions = new ArrayList<>();
-      for (int col : validColumns) {
-        int row = getMinVacantY(col, this.height, board);
-        if (row != -1) {
-          Position currPosition = new Position(col, row);
-          nextPositions.add(new Position(col, row));
-          try {
-            Board b_copy = new Board(board, currPosition.getX(), this.oppPiece);
-            int[] newColValue = minimax(b_copy, depth - 1, alpha, beta, true, depthCounter);
-            if (newColValue[1] > currValue) {
-              currValue = newColValue[1];
-              currColumn = newColValue[0];
-            }
-          } catch (InvalidMoveException ignored) {
-            ;
-          }
-        }
-      }
-      return new int[]{currColumn, currValue};
     }
+    /*
+    Step 4: get score of board including if there is a win/loss/draw
+    Win = 1000000, loss = -1000000, draw = -999999. Anything else is fair game
+    */
+    int currentScore = board.getScore(this.quadruplets);
+    int currentColumn = -1;
+    int nextPlayer = (player % 2) * 2 + (player / 2);
+    /*
+    Step 5: check if a) massive score means win/loss, b) available positions c) not hit depth limit
+    This is the "base case" if no moves are left and should not occur in the first iteration anyway.
+    */
+    //Print statements for tracking
+    System.out.println("Depth counter="+ depthCounter);
+    System.out.println("currentScore=" + currentScore);
+    System.out.println("player=" + nextPlayer);
+    System.out.println(board.prettyPrint());
+    if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || board.filledPositions == board.getWidth() * board.getHeight()) {
+      return new int[]{currentColumn, currentScore}; //In this case, the game would be over.
+    }
+    //The next code only runs if we haven't reached the terminus...
+    int bestColumn = -1;
+    int bestScore = -999999;
+    for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
+      Boardie newBoardie = new Boardie(board);
+      newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
+      int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[0];
+      if (newScore > currentScore) {
+        bestScore = newScore;
+        bestColumn = availablePositions.get(i).getX();
+      }
+    }
+    return new int[]{bestColumn, bestScore};
   }
+
+
 
   @Override
   public int makeMove(Board board) {
@@ -232,7 +210,7 @@ public class GoodAiMate extends Player {
     //TODO: make sure said analysis uses less than 2G of heap and returns within 10 seconds on whichever machine is running it
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
-    //Step 2: run minimax on the current board setup
-    return minimax(currentBoard, this.depth, this.alpha, this.beta, true, 0);
+    //Step 2: run minimax on the current board setup (player 2 set first since they last played)
+    return minimax(currentBoard, 5, this.alpha, this.beta, 1, 0)[0];
   }
 }

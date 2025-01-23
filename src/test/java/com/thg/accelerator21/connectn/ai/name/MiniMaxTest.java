@@ -10,21 +10,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MiniMaxTest {
     @Test
-    public void testMiniMax() {
+    public void testMiniMaxEmpty() {
         GoodAiMate ai = new GoodAiMate(Counter.X);
         System.out.println("setting config");
         GameConfig myConfig = new GameConfig(10,8,4);
-        System.out.println("creating test matrix");
-        Counter[][] matrix = new Counter[10][8];        //Note! It works in columns then rows in Board.
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 10; x++) {
-                matrix[x][y] = null;
+        Board newBoard = new Board(myConfig);
+        System.out.println(ai.makeMove(newBoard));
+    }
+    @Test
+    public void testMiniMaxOneEmpty() {
+        GoodAiMate ai = new GoodAiMate(Counter.X);
+        System.out.println("setting config");
+        GameConfig myConfig = new GameConfig(10,8,4);
+        Counter[][] testMatrix = new Counter[10][8];
+        for (int i = 0; i < 10; i++) {
+            for (int j = 1; j < 8; j++) {
+                if (j == 1){
+                    if (i % 2 == 0) {
+                        testMatrix[i][j] = Counter.X;
+                    } else {
+                        testMatrix[i][j] = Counter.O;
+                    }
+                } else if (j % 2 == 1) {
+                    if (i % 2 == 0) {
+                        testMatrix[i][j] = Counter.X;
+                    } else {
+                        testMatrix[i][j] = Counter.O;
+                    }
+                } else {
+                    if (i % 2 == 0) {
+                        testMatrix[i][j] = Counter.O;
+                    } else {
+                        testMatrix[i][j] = Counter.X;
+                    }
+                }
             }
         }
-        matrix[7][0] = Counter.X;
-        matrix[7][1] = Counter.X;
-        matrix[7][2] = Counter.X;
-        Board myBoard = new Board(matrix,myConfig);
-        ai.minimax(myBoard,2,1,1,true,0);
+        Board newBoard = new Board(testMatrix,myConfig);
+        System.out.println(ai.makeMove(newBoard));
     }
 }

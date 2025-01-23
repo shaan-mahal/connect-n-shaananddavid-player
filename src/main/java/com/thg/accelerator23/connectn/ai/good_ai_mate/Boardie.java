@@ -2,6 +2,7 @@ package com.thg.accelerator23.connectn.ai.good_ai_mate;
 
 import com.thehutgroup.accelerator.connectn.player.Board;
 import com.thehutgroup.accelerator.connectn.player.Counter;
+import com.thehutgroup.accelerator.connectn.player.Position;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ public class Boardie {
     int width;
     int height;
     int filledPositions;
+
 
     //Contructor for initial creation from a Board object
     public Boardie(Board board, Counter myCounter) {
@@ -43,7 +45,7 @@ public class Boardie {
         }
     }
 
-    //Constructor when copying from another Boardie
+    //Constructor when copying from another Boardie - it remembers things about the previous state to aid tail recursion
     public Boardie(Boardie existingBoardie) {
         this.botCounter = existingBoardie.botCounter;
         this.oppCounter = existingBoardie.oppCounter;
@@ -59,18 +61,18 @@ public class Boardie {
         this.oppByte = existingBoardie.oppByte;
     }
 
-    public int[] getFreeColumns() {
+    public ArrayList<Integer> getFreeColumns() {
         ArrayList<Integer> freeColumns = new ArrayList<>();
-        for (int i = 0; i < boardData.length; i++) {
+        for (int i = 0; i < this.width; i++) {
             if (boardData[i][0] == 0) { //We only need to check if the first row is empty.
                 freeColumns.add(i);
             }
         }
-        return freeColumns.stream().mapToInt(i -> i).toArray(); //Not sure why this is necessary. Thx intelliJ.
+        return freeColumns;
     }
 
     public int getLowestFreeRow(int column) {
-        for (int i = boardData[column].length - 1; i >= 0 ; i--) {
+        for (int i = this.height - 1; i >= 0 ; i--) {
             if (boardData[column][i] == 0) {
                 return i;
             }
@@ -123,7 +125,33 @@ public class Boardie {
         return this.filledPositions;
     }
 
-    public int getScore(){
+    public int getWidth(){
+        return this.width;
+    }
+    public int getHeight(){
+        return this.height;
+    }
 
+    public int getScore(ArrayList<Position> quadruplets){
+        int score = 0;
+        //I've made this without IF statements just in case...and it's fun
+        for (int i = 0; i < quadruplets.size(); i+=4) {
+            int[] values = new int[4];
+            values[0] = this.getLocationValue(quadruplets.get(i).getX(), quadruplets.get(i).getY());
+            values[1] = this.getLocationValue(quadruplets.get(i+1).getX(), quadruplets.get(i+1).getY());
+            values[2] = this.getLocationValue(quadruplets.get(i+2).getX(), quadruplets.get(i+2).getY());
+            values[3] = this.getLocationValue(quadruplets.get(i+3).getX(), quadruplets.get(i).getY());
+            for (int j = 0; j < 4; j++) {
+                //Add up scores from bot
+                score += values[j] % 2;
+                //Subtract scores from opponent
+                score -= values[j] / 2;
+            }
+            //Add additional factor for bot if four in a row - win
+            score += (values[0]%2)*(values[1]%2)*(values[2]%2)*(values[3]%2)*2000000;
+            //Subtract additional factor for opponent four in a row - loss
+            score -= (values[0]/2)*(values[1]/2)*(values[2]/2)*(values[3]/2)*2000000;
+        }
+        return score;
     }
 }

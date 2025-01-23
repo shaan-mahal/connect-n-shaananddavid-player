@@ -17,10 +17,20 @@ public class BoardieTest {
         GameConfig myConfig = new GameConfig(10,8,4);
         Board myBoard = new Board(myConfig);
         Boardie boardie = new Boardie(myBoard, Counter.X);
-        int[] expectedCols = new int[]{0,1,2,3,4,5,6,7,8,9};
-        int[] actualCols = boardie.getFreeColumns();
-        for (int i = 0; i < expectedCols.length; i++) {
-            assertEquals(expectedCols[i], actualCols[i]);
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(0);
+        expected.add(1);
+        expected.add(2);
+        expected.add(3);
+        expected.add(4);
+        expected.add(5);
+        expected.add(6);
+        expected.add(7);
+        expected.add(8);
+        expected.add(9);
+        ArrayList<Integer> actualCols = boardie.getFreeColumns();
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actualCols.get(i));
         }
     }
     @Test
