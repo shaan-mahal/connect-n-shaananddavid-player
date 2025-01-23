@@ -140,20 +140,40 @@ public class Boardie {
             values[0] = this.getLocationValue(quadruplets.get(i).getX(), quadruplets.get(i).getY());
             values[1] = this.getLocationValue(quadruplets.get(i+1).getX(), quadruplets.get(i+1).getY());
             values[2] = this.getLocationValue(quadruplets.get(i+2).getX(), quadruplets.get(i+2).getY());
-            values[3] = this.getLocationValue(quadruplets.get(i+3).getX(), quadruplets.get(i).getY());
+            values[3] = this.getLocationValue(quadruplets.get(i+3).getX(), quadruplets.get(i+3).getY());
+//            for (int j = 0; j < 4; j++) {
+//                //Add up scores from bot
+//                score += values[j] % 2;
+//                //Subtract scores from opponent
+//                score -= values[j] / 2;
+//            }
+//            //Add additional factor for bot if four in a row - win
+//            score += (values[0]%2)*(values[1]%2)*(values[2]%2)*(values[3]%2)*2000000;
+//            //Subtract additional factor for opponent four in a row - loss
+//            score -= (values[0]/2)*(values[1]/2)*(values[2]/2)*(values[3]/2)*2000000;
+//            if (quadruplets.get(i).getX() == 4 || quadruplets.get(i).getX() == 5 ) {
+//                score += 1000;
+//            }
+            int player1Count = 0;
+            int player2Count = 0;
+            int sum = 0;
             for (int j = 0; j < 4; j++) {
-                //Add up scores from bot
-                score += values[j] % 2;
-                //Subtract scores from opponent
-                score -= values[j] / 2;
+                if (values[j] == 1) {
+                    player1Count++;
+                } else if (values[j] == 2) {
+                    player2Count++;
+                }
             }
-            //Add additional factor for bot if four in a row - win
-            score += (values[0]%2)*(values[1]%2)*(values[2]%2)*(values[3]%2)*2000000;
-            //Subtract additional factor for opponent four in a row - loss
-            score -= (values[0]/2)*(values[1]/2)*(values[2]/2)*(values[3]/2)*2000000;
-            if (quadruplets.get(i).getX() == 4 || quadruplets.get(i).getX() == 5 ) {
-                score += 1000;
+            sum += (player1Count - player2Count);
+            if (player1Count == 4){
+                sum += 2000000;
             }
+            if (player2Count == 4){
+                sum += -2000000;
+            }
+            score = score + sum;
+            //System.out.println("Quadruplet: "+ quadruplets.get(i).getX() + "," + quadruplets.get(i).getY() + " - " + quadruplets.get(i+3).getX() + "," + quadruplets.get(i+3).getY() + "Sum: " + sum);
+
         }
         return score;
     }
