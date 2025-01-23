@@ -169,7 +169,19 @@ public class Boardie {
                 sum += 2000000;
             }
             if (player2Count == 4){
-                sum += -2000000;
+                sum -= 2000000;
+            }
+            if (((values[0] == 1 && values[1] == 1) || (values[1] ==1 && values[2] == 1) || (values[2] ==1 && values[3] == 1)) && player1Count == 2) {
+                sum+=50;
+            }
+            if (((values[0] == 2 && values[1] == 2) || (values[1] ==2 && values[2] == 2) || (values[2] ==2 && values[3] == 2)) && player2Count == 2) {
+                sum-=50;
+            }
+            if (player1Count == 3){
+                sum+=1000;
+            }
+            if (player2Count == 3){
+                sum-=1000;
             }
             score = score + sum;
             //System.out.println("Quadruplet: "+ quadruplets.get(i).getX() + "," + quadruplets.get(i).getY() + " - " + quadruplets.get(i+3).getX() + "," + quadruplets.get(i+3).getY() + "Sum: " + sum);

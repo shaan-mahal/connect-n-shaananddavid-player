@@ -21,6 +21,6 @@ public class GetScoreTest {
         myBoardie.claimLocation(0,6,1);
         myBoardie.claimLocation(0,5,1);
         System.out.println(myBoardie.prettyPrint());
-        assertEquals(12,myBoardie.getScore(ai.getQuadruplets()));
+        assertEquals(1062,myBoardie.getScore(ai.getQuadruplets()));
     }
 }
