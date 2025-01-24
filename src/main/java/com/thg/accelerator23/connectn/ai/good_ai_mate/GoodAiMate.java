@@ -39,8 +39,8 @@ public class GoodAiMate extends Player {
       this.oppPiece = Counter.X;
     }
     this.depth = 2;
-    this.alpha = 1;
-    this.beta = 1;
+    this.alpha = -9999999;
+    this.beta = 9999999;
   }
 
   private ArrayList<Position> setHorizontalQuadruplets(int width, int height, int nToWin) {
@@ -112,40 +112,53 @@ public class GoodAiMate extends Player {
     Win = 1000000, loss = -1000000, draw = -999999. Anything else is fair game
     */
     int currentScore = board.getScore(this.quadruplets);
-    int nextPlayer = (player % 2) * 2 + (player / 2);
+
     /*
     Step 5: check if a) massive score means win/loss, b) available positions c) not hit depth limit
     This is the "base case" if no moves are left and should not occur in the first iteration anyway.
     */
 
     if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || availablePositions.isEmpty()) {
-      return new int[]{0, currentScore}; //In this case, the game would be over.
+      return new int[]{-1, currentScore}; //In this case, the game would be over.
     }
     //The next code only runs if we haven't reached the terminus...
-    int bestColumn = availablePositions.get(0).getX();
+    int bestColumn = availablePositions.get(availablePositions.size()-1).getX();
     int bestScore;
-    if (nextPlayer == 1 ) {
-      bestScore = -999999;
-    } else {
-      bestScore = 999999;
-    }
-    for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
-      Boardie newBoardie = new Boardie(board);
-      newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
-      int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[1];
-      if (nextPlayer == 1) {
-        if (newScore > bestScore) {
-          bestScore = newScore;
-          bestColumn = availablePositions.get(i).getX();
+    if (player == 1 ) {
+      bestScore = -9999999;
+      for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
+        Boardie newBoardie = new Boardie(board);
+        newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
+        int nextPlayer = 2;
+        int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[1];
+          if (newScore > bestScore) {
+            bestScore = newScore;
+            bestColumn = availablePositions.get(i).getX();
+          }
+          alpha = Math.max(alpha, bestScore);
+          if (alpha >= beta) {
+            break;
+          }
         }
-      } else if (nextPlayer == 2) {
+      return new int[]{bestColumn, bestScore};
+    } else {
+      bestScore = 9999999;
+      for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
+        Boardie newBoardie = new Boardie(board);
+        newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
+        int nextPlayer = 1;
+        int newScore = minimax(newBoardie, depth, alpha, beta, nextPlayer, currentDepth)[1];
         if (newScore < bestScore) {
           bestScore = newScore;
           bestColumn = availablePositions.get(i).getX();
         }
+        beta = Math.min(beta, bestScore);
+        if (alpha >= beta) {
+          break;
+        }
       }
+      return new int[]{bestColumn, bestScore};
     }
-    return new int[]{bestColumn, bestScore};
   }
 
 
@@ -156,7 +169,7 @@ public class GoodAiMate extends Player {
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
-    int[] result = minimax(currentBoard, 4, this.alpha, this.beta, 1, 0);
+    int[] result = minimax(currentBoard, 2, this.alpha, this.beta, 2, 0);
     System.out.println(Arrays.toString(result));
     return result[0];
   }

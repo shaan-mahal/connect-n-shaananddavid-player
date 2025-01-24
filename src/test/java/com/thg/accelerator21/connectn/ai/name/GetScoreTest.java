@@ -23,4 +23,56 @@ public class GetScoreTest {
         System.out.println(myBoardie.prettyPrint());
         assertEquals(1062,myBoardie.getScore(ai.getQuadruplets()));
     }
+    @Test
+    public void test2() {
+        GoodAiMate ai = new GoodAiMate(Counter.X);
+        GameConfig myConfig = new GameConfig(10,8,4);
+        Board myBoard = new Board(myConfig);
+        Boardie myBoardie = new Boardie(myBoard,ai.getCounter());
+        myBoardie.claimLocation(0,7,1);
+        myBoardie.claimLocation(0,6,1);
+        myBoardie.claimLocation(0,5,1);
+        myBoardie.claimLocation(0,4,1);
+        System.out.println(myBoardie.prettyPrint());
+        assertEquals(2001069,myBoardie.getScore(ai.getQuadruplets()));
+    }
+    @Test
+    public void test3() {
+        GoodAiMate ai = new GoodAiMate(Counter.X);
+        GameConfig myConfig = new GameConfig(10,8,4);
+        Board myBoard = new Board(myConfig);
+        Boardie myBoardie = new Boardie(myBoard,ai.getCounter());
+        myBoardie.claimLocation(1,7,2);
+        myBoardie.claimLocation(2,7,2);
+        myBoardie.claimLocation(3,7,2);
+        myBoardie.claimLocation(4,7,2);
+        System.out.println(myBoardie.prettyPrint());
+        assertEquals(-2002073,myBoardie.getScore(ai.getQuadruplets()));
+    }
+    @Test
+    public void test5() {
+        GoodAiMate ai = new GoodAiMate(Counter.X);
+        GameConfig myConfig = new GameConfig(10,8,4);
+        Board myBoard = new Board(myConfig);
+        Boardie myBoardie = new Boardie(myBoard,ai.getCounter());
+        myBoardie.claimLocation(1,7,2);
+        myBoardie.claimLocation(2,7,2);
+        myBoardie.claimLocation(3,7,2);
+        myBoardie.claimLocation(4,7,1);
+        System.out.println(myBoardie.prettyPrint());
+        assertEquals(-2059,myBoardie.getScore(ai.getQuadruplets()));
+    }
+    @Test
+    public void test6() {
+        GoodAiMate ai = new GoodAiMate(Counter.X);
+        GameConfig myConfig = new GameConfig(10,8,4);
+        Board myBoard = new Board(myConfig);
+        Boardie myBoardie = new Boardie(myBoard,ai.getCounter());
+        myBoardie.claimLocation(1,7,2);
+        myBoardie.claimLocation(2,7,2);
+        myBoardie.claimLocation(3,7,1);
+        myBoardie.claimLocation(4,7,1);
+        System.out.println(myBoardie.prettyPrint());
+        assertEquals(55,myBoardie.getScore(ai.getQuadruplets()));
+    }
 }
