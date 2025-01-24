@@ -22,8 +22,8 @@ public class GoodAiMate extends Player {
   private int width;
   private int height;
   private int depth;
-  private int alpha;
-  private int beta;
+  private Integer alpha;
+  private Integer beta;
 
   public GoodAiMate(Counter counter) {
     //TODO: fill in your name here
@@ -39,8 +39,8 @@ public class GoodAiMate extends Player {
       this.oppPiece = Counter.X;
     }
     this.depth = 2;
-    this.alpha = -9999999;
-    this.beta = 9999999;
+    this.alpha = Integer.MIN_VALUE;
+    this.beta = Integer.MAX_VALUE;
   }
 
   private ArrayList<Position> setHorizontalQuadruplets(int width, int height, int nToWin) {
@@ -101,7 +101,7 @@ public class GoodAiMate extends Player {
     return this.quadruplets;
   }
 
-  public int[] minimax(Boardie board, int depth, int alpha, int beta, int player, int depthCounter) {
+  public int[] minimax(Boardie board, int depth, Integer alpha, Integer beta, int player, int depthCounter) {
     //Step 1: update the depth we're at
     int currentDepth = depthCounter + 1;
     //Step 2: gather the free column numbers (0-9), if any
@@ -112,14 +112,13 @@ public class GoodAiMate extends Player {
     Win = 1000000, loss = -1000000, draw = -999999. Anything else is fair game
     */
     int currentScore = board.getScore(this.quadruplets);
-
     /*
     Step 5: check if a) massive score means win/loss, b) available positions c) not hit depth limit
     This is the "base case" if no moves are left and should not occur in the first iteration anyway.
     */
 
     if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || availablePositions.isEmpty()) {
-      return new int[]{-1, currentScore}; //In this case, the game would be over.
+      return new int[]{availablePositions.get(0).getX(), currentScore}; //In this case, the game would be over.
     }
     //The next code only runs if we haven't reached the terminus...
     int bestColumn = availablePositions.get(availablePositions.size()-1).getX();
@@ -169,8 +168,7 @@ public class GoodAiMate extends Player {
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
-    int[] result = minimax(currentBoard, 2, this.alpha, this.beta, 2, 0);
-    System.out.println(Arrays.toString(result));
+    int[] result = minimax(currentBoard, 8, this.alpha, this.beta, 1, 0);
     return result[0];
   }
 }
