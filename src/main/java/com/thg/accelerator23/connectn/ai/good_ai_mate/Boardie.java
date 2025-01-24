@@ -158,8 +158,8 @@ public class Boardie {
             int player2Count = 0;
             int sum = 0;
             for (int j = 0; j < 4; j++) {
-                int x = quadruplets.get(j).getX();
-                int y = quadruplets.get(j).getY();
+                int x = quadruplets.get(j).getX(); // column index
+                int y = quadruplets.get(j).getY(); // row index
                 if (values[j] == 1) {
                     player1Count++;
                     sum += positionalWeighting[y][x]; // add positional weighting to ai

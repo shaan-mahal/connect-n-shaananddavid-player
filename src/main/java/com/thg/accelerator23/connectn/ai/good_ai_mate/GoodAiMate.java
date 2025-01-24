@@ -3,10 +3,7 @@ package com.thg.accelerator23.connectn.ai.good_ai_mate;
 import com.thehutgroup.accelerator.connectn.player.*;
 
 import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 
 public class GoodAiMate extends Player {
@@ -106,7 +103,7 @@ public class GoodAiMate extends Player {
     int currentDepth = depthCounter + 1;
     //Step 2: gather the free column numbers (0-9), if any
 
-    ArrayList<PositionWithScore> availablePositionsWithScores = PositionWithScore.getNextAvailablePositionsWithScores(board, this.quadruplets);
+
     ArrayList<Position> availablePositions = board.getNextAvailablePositions();
     /*
     Step 4: get score of board including if there is a win/loss/draw
@@ -122,15 +119,32 @@ public class GoodAiMate extends Player {
     if (currentDepth == depth || currentScore > 1000000 || currentScore < -1000000 || availablePositions.isEmpty()) {
       return new int[]{0, currentScore}; //In this case, the game would be over.
     }
+    ArrayList<ArrayList<Integer>> availablePositionsWithScores = new ArrayList<ArrayList<Integer>>();
+    for (int i = 0; i < availablePositions.size(); i++) {
+      Boardie newBoard = new Boardie(board);
+      newBoard.claimLocation(availablePositions.get(i).getX(),availablePositions.get(i).getY(),nextPlayer);
+      int newScore = newBoard.getScore(this.quadruplets);
+      ArrayList<Integer> newList = new ArrayList<>();
+      newList.add(newScore);
+      newList.add(i);
+      availablePositionsWithScores.add(newList);
+    }
+    availablePositionsWithScores.sort((p1, p2) -> Integer.compare(p2.get(0), p1.get(0)));
+//    for (int i = 0; i < availablePositionsWithScores.size(); i++) {
+//      System.out.println(availablePositionsWithScores.get(0));
+//    }
+//    ArrayList<PositionWithScore> availablePositionsWithScores = PositionWithScore.getNextAvailablePositionsWithScores(board, this.quadruplets);
+//    // Sorts positions with scores in descending order
+//    availablePositionsWithScores.sort((p1, p2) -> Integer.compare(p2.getScore(), p1.getScore()));
     //The next code only runs if we haven't reached the terminus...
 //    int bestColumn = availablePositions.get(0).getX();
-    int bestColumn = availablePositionsWithScores.get(0).getPosition().getX();
-    int bestScore;
-    if (nextPlayer == 1) {
-      bestScore = -999999;
-    } else {
-      bestScore = 999999;
-    }
+    int bestColumn = availablePositionsWithScores.get(0).get(1);
+    int bestScore = availablePositionsWithScores.get(0).get(0);
+//    if (nextPlayer == 1) {
+//      bestScore = -999999;
+//    } else {
+//      bestScore = 999999;
+//    }
 //    for (int i = 0; i < availablePositions.size(); i++) { //Alternatively we could fill randomly.
 //      Boardie newBoardie = new Boardie(board);
 //      newBoardie.claimLocation(availablePositions.get(i).getX(), availablePositions.get(i).getY(), player);
@@ -147,9 +161,11 @@ public class GoodAiMate extends Player {
 //        }
 //      }
 //    }
-    for (PositionWithScore posWithScore : availablePositionsWithScores) {
+    for ( int i = 0; i < availablePositionsWithScores.size(); i++ ) {
+      int currentPositionIndex = availablePositionsWithScores.get(i).get(1);
+      Position pos = availablePositions.get(currentPositionIndex);
       Boardie newBoardie = new Boardie(board);
-      Position pos = posWithScore.getPosition(); // Get the position from PositionWithScore
+//      Position pos = posWithScore.getPosition(); // Get the position from PositionWithScore
       newBoardie.claimLocation(pos.getX(), pos.getY(), player);
 
       // Use the score stored in PositionWithScore
@@ -179,7 +195,7 @@ public class GoodAiMate extends Player {
     //Step 1: convert board data into a custom Boardie
     Boardie currentBoard = new Boardie(board, this.getCounter());
     //Step 2: run minimax on the current board setup (player 2 set first since they last played)
-    int[] result = minimax(currentBoard, 4, this.alpha, this.beta, 1, 0);
+    int[] result = minimax(currentBoard, 2, this.alpha, this.beta, 1, 0);
     return result[0];
   }
 }
